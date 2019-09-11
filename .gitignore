@@ -1,3 +1,3 @@
-Gruntfile.js
 Scripts/node_modules/
 lib/
+.screeps.json
