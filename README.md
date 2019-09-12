@@ -13,6 +13,7 @@ https://github.com/Garethp/ScreepsAutocomplete
 
 代码参考
 https://github.com/beije/screeps-ai
+https://github.com/thPion/Screeps-Nooby-Guide
 
 中文简洁
 https://screeps-cn.github.io/index.html
