@@ -1,6 +1,6 @@
 'use strict';
 
-var listOfRoles = ['harvester'];
+var listOfRoles = ['harvester', 'upgrader'];
 
 // create a new function for StructureSpawn
 StructureSpawn.prototype.spawnCreepsIfNecessary = 
@@ -13,8 +13,13 @@ StructureSpawn.prototype.spawnCreepsIfNecessary =
             numberOfCreeps[role] = _.sum(creepsInRoom, (c) => c.memory.role == role);
         }
 
+        //
         if (numberOfCreeps['harvester'] < 3 ) {
             this.createCustomCreep(room.energyAvailable, 'harvester');
+        }
+
+        if (numberOfCreeps['upgrader'] < 2 ) {
+            this.createCustomCreep(room.energyAvailable, 'upgrader');
         }
     };
 

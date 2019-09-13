@@ -1,7 +1,8 @@
 'use strict';
 
 var roles = {
-    harvester: require('role.harvester')
+    harvester: require('role.harvester'),
+    upgrader: require('role.upgrader')
 };
 
 Creep.prototype.runRole = 
@@ -9,6 +10,16 @@ Creep.prototype.runRole =
         roles[this.memory.role].run(this);
     };
 
+Creep.prototype.changeWorkingState = 
+    function () {
+        //切换状态
+        if (this.memory.working == true && this.carry.energy == 0) {
+            this.memory.working = false;
+        }
+        else if (this.memory.working == false && this.carry.energy == this.carryCapacity) {
+            this.memory.working = true;
+        }
+    };
 
 /** @function 
 @param {bool} useContainer

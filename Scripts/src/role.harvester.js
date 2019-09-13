@@ -1,16 +1,10 @@
 'use strict';
 
-var roleHarvester = {
+module.exports = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        //切换状态
-        if (creep.memory.working == true && creep.carry.energy == 0) {
-            creep.memory.working = false;
-        }
-        else if (creep.memory.working == false && creep.carry.energy == creep.carryCapacity) {
-            creep.memory.working = true;
-        }
+        creep.changeWorkingState();
         
         //存储能量
         if (creep.memory.working == true) {
@@ -39,5 +33,3 @@ var roleHarvester = {
         }
     }
 };
-
-module.exports = roleHarvester;
