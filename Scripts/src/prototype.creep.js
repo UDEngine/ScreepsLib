@@ -2,7 +2,9 @@
 
 var roles = {
     harvester: require('role.harvester'),
-    upgrader: require('role.upgrader')
+    upgrader: require('role.upgrader'),
+    builder: require('role.builder'),
+    repairer: require('role.repairer')
 };
 
 Creep.prototype.runRole = 
@@ -10,6 +12,7 @@ Creep.prototype.runRole =
         roles[this.memory.role].run(this);
     };
 
+//改变工作状态
 Creep.prototype.changeWorkingState = 
     function () {
         //切换状态
