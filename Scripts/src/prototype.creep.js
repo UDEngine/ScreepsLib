@@ -31,12 +31,25 @@ Creep.prototype.getEnergy =
     function (useContainer, useSource) {
         let container;
         if (useContainer) {
-
+            container = this.pos.findClosestByPath(FIND_STRUCTURES, {
+                filter: s => (s.structureType == STRUCTURE_CONTAINER 
+                            || s.structureType == STRUCTURE_STORAGE) 
+                            && s.store[RESOURCE_ENERGY] > 0
+            });
+            if (container != undefined) {
+                if (this.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                    this.moveTo(container);
+                }
+            }
         }
 
         // if no container was found and the Creep should look for Sources
         if (container == undefined && useSource) {
             var source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
+            if (this.memory.sourceId != undefined) {
+                source = Game.getObjectById(this.memory.sourceId);
+            }
+
             if (this.harvest(source) == ERR_NOT_IN_RANGE) {
                 this.moveTo(source);
             }

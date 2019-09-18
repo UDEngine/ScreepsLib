@@ -10,9 +10,9 @@ module.exports.loop = function () {
       Game.creeps[name].runRole();
    }
 
-      // for each spawn
-      for (let spawnName in Game.spawns) {
-         // run spawn logic
-         Game.spawns[spawnName].spawnCreepsIfNecessary();
-     }
+   // for each spawn
+   for (let spawnName in Game.spawns) {
+      // run spawn logic
+      Game.spawns[spawnName].spawnCreepsIfNecessary();
+   }
 }

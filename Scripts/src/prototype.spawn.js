@@ -13,30 +13,27 @@ StructureSpawn.prototype.spawnCreepsIfNecessary =
             numberOfCreeps[role] = _.sum(creepsInRoom, (c) => c.memory.role == role);
         }
 
-        //
-        if (numberOfCreeps['harvester'] < 2 ) {
-            this.createCustomCreep(room.energyAvailable, 'harvester');
-            return;
-        }
-
-        if (numberOfCreeps['upgrader'] < 2) {
-            this.createCustomCreep(room.energyAvailable, 'upgrader');
-            return;
-        }
-
-        if (numberOfCreeps['builder'] < 2) {
+        if (numberOfCreeps['builder'] < 1) {
             this.createCustomCreep(room.energyAvailable, 'builder');
-            return;
         }
 
         if (numberOfCreeps['repairer'] < 1) {
             this.createCustomCreep(room.energyAvailable, 'repairer');
         }
+
+        let sourceList = this.room.find(FIND_SOURCES_ACTIVE);
+        
+        for (let i in sourceList) {
+            let source = sourceList[i];
+            if (!_.some(creepsInRoom, c => c.memory.role == 'harvester' && c.memory.sourceId == source.id)) {
+                this.createCustomCreep(room.energyAvailable, 'harvester', source.id);
+            }
+        }
     };
 
 // create a new function for StructureSpawn
 StructureSpawn.prototype.createCustomCreep =
-    function (energy, roleName) {
+    function (energy, roleName, sourceId) {
         // create a balanced body as big as possible with the given energy
         var numberOfParts = Math.floor(energy / 200);
         // make sure the creep is not too big (more than 50 parts)
@@ -54,5 +51,5 @@ StructureSpawn.prototype.createCustomCreep =
 
         // create creep with the created body and the given role
         let creepName = roleName + Game.time;
-        return this.createCreep(body, creepName, { role: roleName, working: false });
+        return this.createCreep(body, creepName, { role: roleName, working: false, sourceId: sourceId, roomName:this.room.name });
     };
