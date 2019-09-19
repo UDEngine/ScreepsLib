@@ -11,11 +11,13 @@ module.exports = {
         //存储能量
         if (creep.memory.working == true) {
             let structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-                filter: (s) => (s.structureType == STRUCTURE_SPAWN
-                             || s.structureType == STRUCTURE_EXTENSION
-                             || s.structureType == STRUCTURE_TOWER
-                             || s.structureType == STRUCTURE_CONTAINER)
-                             && s.energy < s.energyCapacity
+                filter: (s) => ((s.structureType == STRUCTURE_SPAWN 
+                               || s.structureType == STRUCTURE_EXTENSION 
+                               || s.structureType == STRUCTURE_TOWER)
+                               && s.energy < s.energyCapacity)
+                             || ((s.structureType == STRUCTURE_CONTAINER || s.structureType == STRUCTURE_STORAGE)
+                               && s.store[RESOURCE_ENERGY] < s.storeCapacity)
+                             
             });
 
             if (structure == undefined) {

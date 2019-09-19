@@ -8,12 +8,9 @@ module.exports = {
         creep.changeWorkingState();
 
         if (creep.memory.working == true) {
-            for (let name in Game.rooms) {
-                console.log(name);
-            }
             let controller = creep.room.controller;
             if (creep.memory.roomName != undefined) {
-                controller = Game.rooms[creep.memory.roomName];
+                controller = Game.rooms[creep.memory.roomName].controller;
             }
 
             if (creep.upgradeController(controller) == ERR_NOT_IN_RANGE) {

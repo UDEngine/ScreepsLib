@@ -13,11 +13,11 @@ StructureSpawn.prototype.spawnCreepsIfNecessary =
             numberOfCreeps[role] = _.sum(creepsInRoom, (c) => c.memory.role == role);
         }
 
-        if (numberOfCreeps['builder'] < 1) {
+        if (numberOfCreeps['builder'] < 2) {
             this.createCustomCreep(room.energyAvailable, 'builder');
         }
 
-        if (numberOfCreeps['repairer'] < 1) {
+        if (numberOfCreeps['repairer'] < 2) {
             this.createCustomCreep(room.energyAvailable, 'repairer');
         }
 
@@ -28,6 +28,21 @@ StructureSpawn.prototype.spawnCreepsIfNecessary =
             if (!_.some(creepsInRoom, c => c.memory.role == 'harvester' && c.memory.sourceId == source.id)) {
                 this.createCustomCreep(room.energyAvailable, 'harvester', source.id);
             }
+        }
+    };
+
+//制造货车
+StructureSpawn.prototype.createLorry =
+    function () {
+        let structures = room.find(FIND_MY_STRUCTURES, {
+            filter: (s) => (s.structureType == STRUCTURE_STORAGE
+                         || s.structureType == STRUCTURE_CONTAINER)
+                         && s.store[RESOURCE_ENERGY] < s.storeCapacity
+        });
+
+        //如果有容器，就制造货车
+        if (structures.length > 0) {
+
         }
     };
 
