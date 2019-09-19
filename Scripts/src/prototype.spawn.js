@@ -1,6 +1,6 @@
 'use strict';
 
-var listOfRoles = ['harvester', 'upgrader', 'builder', 'repairer'];
+var listOfRoles = ['harvester', 'upgrader', 'builder', 'repairer', 'lorry'];
 
 // create a new function for StructureSpawn
 StructureSpawn.prototype.spawnCreepsIfNecessary = 
@@ -13,43 +13,43 @@ StructureSpawn.prototype.spawnCreepsIfNecessary =
             numberOfCreeps[role] = _.sum(creepsInRoom, (c) => c.memory.role == role);
         }
 
-        if (numberOfCreeps['builder'] < 2) {
+        if (room.energyAvailable / room.energyCapacityAvailable < 0.8) {
+            return;
+        }
+        
+        if (numberOfCreeps['builder'] < 3) {
             this.createCustomCreep(room.energyAvailable, 'builder');
         }
 
-        if (numberOfCreeps['repairer'] < 2) {
+        if (numberOfCreeps['repairer'] < 3) {
             this.createCustomCreep(room.energyAvailable, 'repairer');
         }
 
-        //每个矿暂时配两个矿工
-        let sourceList = this.room.find(FIND_SOURCES_ACTIVE);
-        for (let i in sourceList) {
-            let source = sourceList[i];
-            let creeps = _.filter(creepsInRoom, c => c.memory.role == 'harvester' && c.memory.sourceId == source.id);
-            if (creeps.length < 2) {
-                this.createWorker(room.energyAvailable, 'harvester', source.id);
-            }
-        }
+        //创造足够多的的卡车
+        this.createEnoughLorry(numberOfCreeps['lorry']);
+        //创建足够的Harvester
+        this.createEnoughHarvester(creepsInRoom);
     };
 
-//制造货车
-StructureSpawn.prototype.createLorry =
-    function () {
-        let structures = room.find(FIND_MY_STRUCTURES, {
-            filter: (s) => (s.structureType == STRUCTURE_STORAGE
-                         || s.structureType == STRUCTURE_CONTAINER)
-                         && s.store[RESOURCE_ENERGY] < s.storeCapacity
-        });
-
-        //如果有容器，就制造货车
-        if (structures.length > 0) {
-
+//创建足够的Harvester
+StructureSpawn.prototype.createEnoughHarvester =
+    function (creepsInRoom) {
+        //每个矿暂时配两个矿工
+        let sourceList = this.room.find(FIND_SOURCES_ACTIVE);
+        for (let source of sourceList) {
+            let creeps = _.filter(creepsInRoom, c => c.memory.role == 'harvester' && c.memory.sourceId == source.id);
+            let workBodySum = _.sum(creeps, c => Math.floor(c.body.length / 2));
+            console.log(workBodySum);
+            if (workBodySum == undefined || workBodySum < source.energyCapacity / 300 / 2 + 1) {
+                this.createWorker('harvester', source.id);
+            }
         }
     };
 
 // create a new function for StructureSpawn
 StructureSpawn.prototype.createCustomCreep =
     function (energy, roleName) {
+        // if (this.room.controller.level )
 
         let body = [];
         let numberOfParts = Math.floor(energy / 200);
@@ -66,12 +66,15 @@ StructureSpawn.prototype.createCustomCreep =
         
         // create creep with the created body and the given role
         let creepName = roleName + Game.time;
-        return this.createCreep(body, creepName, { role: roleName, working: false, roomName:this.room.name });
+        return this.spawnCreep(body, creepName, {
+            memory: { role: roleName, working: false, roomName:this.room.name }
+        });
     };
 
 // create a new function for StructureSpawn
 StructureSpawn.prototype.createWorker =
-    function (energy, roleName, sourceId) {
+    function (roleName, sourceId) {
+        let energy = this.room.energyAvailable;
         let structureArr = this.room.find(FIND_STRUCTURES, {
             filter: (s) => s.structureType == STRUCTURE_CONTAINER 
         });
@@ -110,8 +113,42 @@ StructureSpawn.prototype.createWorker =
             }
         }
 
-        if (body.length > 0) {
-            let creepName = roleName + Game.time;
-            return this.createCreep(body, creepName, { role: roleName, working: false, sourceId: sourceId, roomName: this.room.name });
+        let creepName = roleName + Game.time;
+        return this.spawnCreep(body, creepName, { 
+            memory: {role: roleName, working: false, sourceId: sourceId, roomName: this.room.name}
+        });
+    };
+
+// create a new function for StructureSpawn
+StructureSpawn.prototype.createEnoughLorry =
+    function (aliveLorryNum) {
+        let structures = this.room.find(FIND_STRUCTURES, {
+            filter: (s) => s.structureType == STRUCTURE_CONTAINER
+                         && (s.pos.findInRange(FIND_SOURCES_ACTIVE, 3)).length > 0
+                         && s.store[RESOURCE_ENERGY] > 0
+        });
+
+        //如果有容器，就制造货车
+        for (let i = aliveLorryNum; i < Math.floor(structures.length); i++) {
+            this.createLorry();
         }
+    };
+
+StructureSpawn.prototype.createLorry = 
+    function () {
+        let energy = this.room.energyAvailable;
+        let numberOfParts = Math.floor(energy / 150);
+        numberOfParts = Math.min(numberOfParts, Math.floor(50 / 3));
+        let body = [];
+        for (let i = 0; i < numberOfParts * 2; i++) {
+            body.push(CARRY);
+        }
+        for (let i = 0; i < numberOfParts; i++) {
+            body.push(MOVE);
+        }
+        console.log("createLorry: bodylength:" + body.length);
+        let creepName = "lorry" + Game.time;
+        return this.spawnCreep(body, creepName, { 
+            memory: {role: 'lorry', working: false}
+        });
     };

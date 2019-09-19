@@ -4,7 +4,8 @@ var roles = {
     harvester: require('role.harvester'),
     upgrader: require('role.upgrader'),
     builder: require('role.builder'),
-    repairer: require('role.repairer')
+    repairer: require('role.repairer'),
+    lorry: require('role.lorry')
 };
 
 Creep.prototype.runRole = 
@@ -34,7 +35,7 @@ Creep.prototype.getEnergy =
             container = this.pos.findClosestByPath(FIND_STRUCTURES, {
                 filter: s => (s.structureType == STRUCTURE_CONTAINER 
                             || s.structureType == STRUCTURE_STORAGE) 
-                            && s.store[RESOURCE_ENERGY] > 0
+                            && s.store[RESOURCE_ENERGY] > this.carryCapacity
             });
             if (container != undefined) {
                 if (this.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {

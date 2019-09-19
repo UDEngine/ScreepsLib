@@ -10,7 +10,16 @@ module.exports = {
         creep.changeWorkingState();
 
         if (creep.memory.working == true) {
-            var structure = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+
+            let towers = creep.room.find(FIND_STRUCTURES, {
+                filter: (s) => s.structureType == STRUCTURE_TOWER
+            })
+            if (towers.length > 0) {
+                roleBuilder.run(creep);
+                return;
+            }
+
+            let structure = creep.pos.findClosestByPath(FIND_STRUCTURES, {
                 filter: (s) => s.hits < s.hitsMax && s.structureType != STRUCTURE_WALL
             });
 

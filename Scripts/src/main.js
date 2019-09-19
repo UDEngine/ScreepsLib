@@ -1,18 +1,20 @@
 // import modules
 require('prototype.creep');
 require('prototype.spawn');
+require('prototype.tower');
 
 module.exports.loop = function () {
 
-   // for each creeps
    for (let name in Game.creeps) {
-      // run creep logic
       Game.creeps[name].runRole();
    }
 
-   // for each spawn
+   var towers = _.filter(Game.structures, s => s.structureType == STRUCTURE_TOWER);
+   for (let tower of towers) {
+      tower.run();
+   }
+
    for (let spawnName in Game.spawns) {
-      // run spawn logic
       Game.spawns[spawnName].spawnCreepsIfNecessary();
    }
 }
