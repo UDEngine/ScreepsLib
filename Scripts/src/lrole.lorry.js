@@ -7,24 +7,29 @@ module.exports = {
 
         creep.changeWorkingState();
         //存放能量
+        //优先补充能量
         if (creep.memory.working == true) {
             var structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
                 filter: (s) => (s.structureType == STRUCTURE_SPAWN
                             || s.structureType == STRUCTURE_EXTENSION
-                            || s.structureType == STRUCTURE_TOWER
-                            || s.structureType == STRUCTURE_STORAGE)
-                            && (s.energy < s.energyCapacity || s.store[RESOURCE_ENERGY] < s.storeCapacity)
+                            || s.structureType == STRUCTURE_TOWER)
+                            && s.energy < s.energyCapacity
             });
 
+            //如果都满了就补充容器
             if (structure == undefined) {
-                structure = creep.room.storage;
-            }
+                structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
+                    filter: (s) => s.structureType == STRUCTURE_CONTAINER
+                                && s.store[RESOURCE_ENERGY] < s.storeCapacity 
+                                && (s.pos.findInRange(FIND_SOURCES_ACTIVE, 3)).length < 1
+                });
 
-            // if we found one
+                if (structure == undefined) {
+                    structure = creep.room.storage;
+                }
+            }
             if (structure != undefined) {
-                // try to transfer energy, if it is not in range
                 if (creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                    // move towards it
                     creep.moveTo(structure);
                 }
             }
