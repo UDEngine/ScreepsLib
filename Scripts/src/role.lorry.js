@@ -10,9 +10,9 @@ module.exports = {
         //优先补充能量
         if (creep.memory.working == true) {
             var structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-                filter: (s) => (s.structureType == STRUCTURE_SPAWN
-                            || s.structureType == STRUCTURE_EXTENSION
-                            || s.structureType == STRUCTURE_TOWER)
+                filter: (s) => (s.structureType == STRUCTURE_EXTENSION
+                            || (s.structureType == STRUCTURE_TOWER && s.energy / s.energyCapacity < 0.8)
+                            || s.structureType == STRUCTURE_SPAWN)
                             && s.energy < s.energyCapacity
             });
 
@@ -37,6 +37,18 @@ module.exports = {
         }
         // if creep is supposed to get energy
         else {
+
+            let target = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
+                filter: s => s.amount > 200 
+            });
+
+            if(target != undefined) {
+                if(creep.pickup(target) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(target);
+                    return;
+                }
+            }
+
             let container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
                 filter: s => s.structureType == STRUCTURE_CONTAINER 
                              && s.store[RESOURCE_ENERGY] > creep.carryCapacity
