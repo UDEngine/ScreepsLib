@@ -6,6 +6,11 @@ module.exports = {
     run: function (creep) {
 
         creep.changeWorkingState();
+
+        if (creep.memory.working == false && creep.room.energyAvailable < 600 && creep.carry[RESOURCE_ENERGY] > 0) {
+            creep.memory.working = true;
+        }
+
         //存放能量
         //优先补充能量
         if (creep.memory.working == true) {
@@ -21,7 +26,7 @@ module.exports = {
                 structure = creep.pos.findClosestByPath(FIND_STRUCTURES, {
                     filter: (s) => s.structureType == STRUCTURE_CONTAINER
                                 && s.store[RESOURCE_ENERGY] < s.storeCapacity 
-                                && (s.pos.findInRange(FIND_SOURCES_ACTIVE, 4)).length < 1
+                                && (s.pos.findInRange(FIND_SOURCES, 4)).length < 1
                 });
             }
             
@@ -38,6 +43,7 @@ module.exports = {
         // if creep is supposed to get energy
         else {
 
+            //捡取掉在地上的能量
             let target = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
                 filter: s => s.amount > 200 
             });
@@ -49,31 +55,30 @@ module.exports = {
                 }
             }
 
-            let container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+            //优先取矿区的container
+            let container;
+            let containerArr = creep.room.find(FIND_STRUCTURES, {
                 filter: s => s.structureType == STRUCTURE_CONTAINER 
-                             && s.store[RESOURCE_ENERGY] > creep.carryCapacity
-                             && (s.pos.findInRange(FIND_SOURCES_ACTIVE, 3)).length > 0
+                            && s.store[RESOURCE_ENERGY] > creep.carryCapacity / 2
+                            && (s.pos.findInRange(FIND_SOURCES, 4)).length > 0
             });
 
-            if (container == undefined || container.store[RESOURCE_ENERGY] / container.storeCapacity < 0.7) {
-                let containerArr = creep.room.find(FIND_STRUCTURES, {
-                    filter: s => s.structureType == STRUCTURE_CONTAINER 
-                                && s.store[RESOURCE_ENERGY] > creep.carryCapacity
-                                && (s.pos.findInRange(FIND_SOURCES_ACTIVE, 3)).length > 0
-                });
-                if (container == undefined) {
-                    container = containerArr[0]; 
-                }
-                else {
-                    for (let c of containerArr) {
-                        if ((c.store[RESOURCE_ENERGY] / c.storeCapacity) > 0.7) {
-                            container = c;
-                        }
-                    }
-                }
+            if (containerArr.length > 0) {
+                container = _.max(containerArr, (c) => c.store[RESOURCE_ENERGY]);
+
+                // container = containerArr[0]; 
             }
 
             if (container == undefined) {
+                //其次取link里
+                container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+                    filter: s => s.structureType == STRUCTURE_LINK
+                                && s.energy > 300
+                });
+            }
+
+            //紧急情况取仓库里的
+            if (container == undefined && creep.room.storage.store[RESOURCE_ENERGY] > creep.carryCapacity && creep.room.energy / creep.room.energyAvailable < 0.5) {
                 container = creep.room.storage;
             }
 

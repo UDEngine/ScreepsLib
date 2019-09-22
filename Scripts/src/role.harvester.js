@@ -1,7 +1,5 @@
 'use strict';
 
-var roleBuilder = require('role.builder');
-
 module.exports = {
 
     /** @param {Creep} creep **/
@@ -13,8 +11,10 @@ module.exports = {
             let structure = creep.room.storage;
             
             let structureArr = creep.pos.findInRange(FIND_STRUCTURES, 3, {
-                filter: (s) => s.structureType == STRUCTURE_CONTAINER 
-                               && s.store[RESOURCE_ENERGY] < s.storeCapacity
+                filter: (s) => (s.structureType == STRUCTURE_CONTAINER 
+                                 && s.store[RESOURCE_ENERGY] < s.storeCapacity)
+                               || (s.structureType == STRUCTURE_LINK
+                                && s.energy < s.energyCapacity)
             });
             if (structureArr.length > 0) {
                 structure = structureArr[0];
@@ -37,9 +37,6 @@ module.exports = {
                 if (creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(structure);
                 }
-            }
-            else {
-                roleBuilder.run(creep);
             }
         }
         //采矿

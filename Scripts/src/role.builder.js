@@ -1,12 +1,16 @@
 'use strict';
 
 var roleUpgrader = require('role.upgrader');
+var roleHarvester = require('role.harvester');
 
 module.exports = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-
+        if (creep.room.energyAvailable < 600) {
+            roleHarvester.run(creep);
+            return;
+        }
         creep.changeWorkingState();
 
         if (creep.memory.working == true) {

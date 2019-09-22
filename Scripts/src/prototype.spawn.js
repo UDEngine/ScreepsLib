@@ -23,12 +23,12 @@ StructureSpawn.prototype.spawnCreepsIfNecessary =
             this.createCustomCreep(room.energyAvailable, 'builder');
         }
 
-        if (numberOfCreeps['repairer'] < 2) {
+        if (numberOfCreeps['repairer'] < 1) {
             this.createCustomCreep(room.energyAvailable, 'repairer');
         }
 
         //创造足够多的的卡车
-        this.createEnoughLorry(numberOfCreeps['lorry']);
+        this.createEnoughLorry(creepsInRoom);
         //创建足够的Harvester
         this.createEnoughHarvester(creepsInRoom);
     };
@@ -121,15 +121,17 @@ StructureSpawn.prototype.createWorker =
 
 // create a new function for StructureSpawn
 StructureSpawn.prototype.createEnoughLorry =
-    function (aliveLorryNum) {
+    function (creepsInRoom) {
         let structures = this.room.find(FIND_STRUCTURES, {
             filter: (s) => s.structureType == STRUCTURE_CONTAINER
                          && (s.pos.findInRange(FIND_SOURCES_ACTIVE, 3)).length > 0
                          && s.store[RESOURCE_ENERGY] > 0
         });
-
+        //如果装载能力大于500，就不制造货车了
+        let creeps = _.filter(creepsInRoom, c => c.memory.role == 'lorry');
+        let carryCapacitySum = _.sum(creeps, c => c.carryCapacity);
         //如果有容器，就制造货车
-        for (let i = aliveLorryNum; i < Math.floor(structures.length); i++) {
+        if (carryCapacitySum < 500 && structures.length > 0) {
             this.createLorry();
         }
     };
@@ -138,7 +140,8 @@ StructureSpawn.prototype.createLorry =
     function () {
         let energy = this.room.energyAvailable;
         let numberOfParts = Math.floor(energy / 150);
-        numberOfParts = Math.min(numberOfParts, Math.floor(50 / 3));
+        //最多有14个carry组件就够用了
+        numberOfParts = Math.min(numberOfParts, 7);
         let body = [];
         for (let i = 0; i < numberOfParts * 2; i++) {
             body.push(CARRY);
