@@ -7,11 +7,11 @@ module.exports = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        if (creep.room.energyAvailable < 600) {
-            roleHarvester.run(creep);
-            return;
-        }
-        creep.changeWorkingState();
+        // if (creep.room.energyAvailable < 600) {
+        //     roleHarvester.run(creep);
+        //     return;
+        // }
+        // creep.changeWorkingState();
 
         if (creep.memory.working == true) {
             var constructionSite = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);

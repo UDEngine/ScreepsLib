@@ -5,11 +5,15 @@ var roles = {
     upgrader: require('role.upgrader'),
     builder: require('role.builder'),
     repairer: require('role.repairer'),
-    lorry: require('role.lorry')
+    lorry: require('role.lorry'),
+    attacker: require('role.attacker'),
+    farbuilder: require('role.farbuilder'),
+    miner: require('role.miner')
 };
 
 Creep.prototype.runRole = 
     function () {
+        this.changeWorkingState();
         roles[this.memory.role].run(this);
     };
 
@@ -30,6 +34,16 @@ Creep.prototype.changeWorkingState =
 @param {bool} useSource */
 Creep.prototype.getEnergy = 
     function (useContainer, useSource) {
+        //捡取掉在地上的能量
+        let target = this.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
+            filter: s => s.amount > 300 
+        });
+        if(target != undefined) {
+            if(this.pickup(target) == ERR_NOT_IN_RANGE) {
+                this.moveTo(target);
+                return;
+            }
+        }
         let container;
         if (useContainer) {
             container = this.pos.findClosestByPath(FIND_STRUCTURES, {

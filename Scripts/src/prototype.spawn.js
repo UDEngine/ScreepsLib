@@ -1,6 +1,6 @@
 'use strict';
 
-var listOfRoles = ['harvester', 'upgrader', 'builder', 'repairer', 'lorry'];
+var listOfRoles = ['harvester', 'upgrader', 'builder', 'repairer', 'lorry', 'attacker', 'farbuilder', 'miner'];
 
 // create a new function for StructureSpawn
 StructureSpawn.prototype.spawnCreepsIfNecessary = 
@@ -13,12 +13,22 @@ StructureSpawn.prototype.spawnCreepsIfNecessary =
             numberOfCreeps[role] = _.sum(creepsInRoom, (c) => c.memory.role == role);
         }
 
-        let sources = this.room.find(FIND_SOURCES_ACTIVE);
-
+        // let sources = this.room.find(FIND_SOURCES_ACTIVE);
         // if ((room.energyAvailable / room.energyCapacityAvailable < 0.8) && numberOfCreeps["harvester"] >= sources.length && numberOfCreeps["lorry"] > 0) {
         //     return;
         // }
-        
+        // if (numberOfCreeps['attacker'] < 1) {
+        //     this.createAttacker('attacker');
+        // }
+
+        // let extractors = this.room.find(FIND_STRUCTURES, {
+        //     filter: (s) => s.structureType == STRUCTURE_EXTRACTOR
+        // });
+
+        // if (numberOfCreeps['miner'] < 1 && extractors.length > 0) {
+        //     this.createMiner('miner');
+        // }
+
         if (numberOfCreeps['builder'] < 2) {
             this.createCustomCreep(room.energyAvailable, 'builder');
         }
@@ -31,6 +41,12 @@ StructureSpawn.prototype.spawnCreepsIfNecessary =
         this.createEnoughLorry(creepsInRoom);
         //创建足够的Harvester
         this.createEnoughHarvester(creepsInRoom);
+
+
+        let creepsInE11S39 = Game.rooms['E11S39'].find(FIND_MY_CREEPS);
+        if (creepsInE11S39.length + numberOfCreeps['farbuilder'] < 1) {
+            this.createFarBuilder('farbuilder');
+        }
     };
 
 //创建足够的Harvester
@@ -72,6 +88,36 @@ StructureSpawn.prototype.createCustomCreep =
             memory: { role: roleName, working: false, roomName:this.room.name }
         });
     };
+
+// create a new function for StructureSpawn
+StructureSpawn.prototype.createFarBuilder =
+    function (roleName) {
+        let body = [WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE];
+        let creepName = roleName + Game.time;
+        return this.spawnCreep(body, creepName, {
+            memory: { role: roleName, working: false, roomName:"E11S39" }
+        });
+    };
+
+// create a new function for StructureSpawn
+StructureSpawn.prototype.createAttacker =
+    function (roleName) {
+        let body = [CLAIM, WORK, CARRY, MOVE, MOVE, MOVE];
+        let creepName = roleName + Game.time;
+        return this.spawnCreep(body, creepName, {
+            memory: { role: roleName, working: false, roomName:"E11S39" }
+        });
+    };
+
+StructureSpawn.prototype.createMiner=
+function (roleName) {
+    let body = [WORK, WORK, WORK, CARRY, MOVE, MOVE];
+    let creepName = roleName + Game.time;
+    let minerals = this.room.find(FIND_MINERALS);
+    return this.spawnCreep(body, creepName, {
+        memory: { role: roleName, working: false, roomName:this.room.name, sourceId: minerals[0].id }
+    });
+};
 
 // create a new function for StructureSpawn
 StructureSpawn.prototype.createWorker =
@@ -152,6 +198,6 @@ StructureSpawn.prototype.createLorry =
         console.log("createLorry: bodylength:" + body.length);
         let creepName = "lorry" + Game.time;
         return this.spawnCreep(body, creepName, { 
-            memory: {role: 'lorry', working: false}
+            memory: {role: 'lorry', working: false, roomName: this.room.name}
         });
     };

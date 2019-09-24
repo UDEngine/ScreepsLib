@@ -4,7 +4,7 @@ module.exports = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        creep.changeWorkingState();
+        // creep.changeWorkingState();
         
         //存储能量
         if (creep.memory.working == true) {

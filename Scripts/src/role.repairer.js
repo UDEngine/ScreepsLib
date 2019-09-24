@@ -11,7 +11,7 @@ module.exports = {
             roleHarvester.run(creep);
             return;
         }
-        creep.changeWorkingState();
+        // creep.changeWorkingState();
 
         if (creep.memory.working == true) {
 

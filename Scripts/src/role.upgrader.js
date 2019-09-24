@@ -5,7 +5,7 @@ module.exports = {
     /** @param {Creep} creep **/
     run: function (creep) {
 
-        creep.changeWorkingState();
+        // creep.changeWorkingState();
 
         if (creep.memory.working == true) {
             let controller = creep.room.controller;

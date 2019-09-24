@@ -5,7 +5,7 @@ module.exports = {
     /** @param {Creep} creep **/
     run: function (creep) {
 
-        creep.changeWorkingState();
+        // creep.changeWorkingState();
 
         if (creep.memory.working == false && creep.room.energyAvailable < 600 && creep.carry[RESOURCE_ENERGY] > 0) {
             creep.memory.working = true;
@@ -27,6 +27,7 @@ module.exports = {
                     filter: (s) => s.structureType == STRUCTURE_CONTAINER
                                 && s.store[RESOURCE_ENERGY] < s.storeCapacity 
                                 && (s.pos.findInRange(FIND_SOURCES, 4)).length < 1
+                                && (s.pos.findInRange(FIND_MINERALS, 4)).length < 1    
                 });
             }
             
