@@ -74,7 +74,7 @@ module.exports = {
                 //其次取link里
                 container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
                     filter: s => s.structureType == STRUCTURE_LINK
-                                && s.energy >= s.energyCapacity 
+                                && s.energy >= s.energyCapacity - 50 
                 });
             }
 

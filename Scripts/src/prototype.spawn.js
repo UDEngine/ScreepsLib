@@ -185,11 +185,11 @@ StructureSpawn.prototype.createEnoughLorry =
 StructureSpawn.prototype.createLorry = 
     function () {
         let energy = this.room.energyAvailable;
-        let numberOfParts = Math.floor(energy / 150);
+        let numberOfParts = Math.floor(energy / 100);
         //最多有14个carry组件就够用了
-        numberOfParts = Math.min(numberOfParts, 6);
+        numberOfParts = Math.min(numberOfParts, 9);
         let body = [];
-        for (let i = 0; i < numberOfParts * 2; i++) {
+        for (let i = 0; i < numberOfParts; i++) {
             body.push(CARRY);
         }
         for (let i = 0; i < numberOfParts; i++) {

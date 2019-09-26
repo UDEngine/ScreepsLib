@@ -2,7 +2,7 @@
 
 StructureLink.prototype.run =
     function () {
-        if (this.energy < this.energyCapacity) {
+        if (this.energy < this.energyCapacity - 40) {
             return;
         }
 
