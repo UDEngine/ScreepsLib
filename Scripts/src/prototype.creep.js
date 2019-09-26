@@ -38,7 +38,7 @@ Creep.prototype.getEnergy =
         let target = this.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
             filter: s => s.amount > 300 
         });
-        if(target != undefined) {
+        if(target != undefined && this.memory.role != 'harvester') {
             if(this.pickup(target) == ERR_NOT_IN_RANGE) {
                 this.moveTo(target);
                 return;

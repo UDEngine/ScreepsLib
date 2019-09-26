@@ -7,18 +7,17 @@ module.exports = {
         // creep.changeWorkingState();
         
         //存储能量
-        if (creep.memory.working == true) {
-            let structure = creep.room.storage;
-            
-            let structureArr = creep.pos.findInRange(FIND_STRUCTURES, 3, {
+        if (creep.memory.working == true) {     
+            let structure = creep.pos.findClosestByPath(FIND_STRUCTURES, {
                 filter: (s) => (s.structureType == STRUCTURE_CONTAINER 
                                  && s.store[RESOURCE_ENERGY] < s.storeCapacity)
                                || (s.structureType == STRUCTURE_LINK
                                 && s.energy < s.energyCapacity)
             });
-            if (structureArr.length > 0) {
-                structure = structureArr[0];
-            }
+
+            // if (structureArr.length > 0) {
+            //     structure = structureArr[0];
+            // }
 
             if (structure == undefined) {
                 structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {

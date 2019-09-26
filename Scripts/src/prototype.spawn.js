@@ -57,7 +57,6 @@ StructureSpawn.prototype.createEnoughHarvester =
         for (let source of sourceList) {
             let creeps = _.filter(creepsInRoom, c => c.memory.role == 'harvester' && c.memory.sourceId == source.id);
             let workBodySum = _.sum(creeps, c => Math.floor(c.body.length / 2));
-            console.log(workBodySum);
             if (workBodySum == undefined || workBodySum < source.energyCapacity / 300 / 2) {
                 this.createWorker('harvester', source.id);
             }
@@ -71,7 +70,7 @@ StructureSpawn.prototype.createCustomCreep =
 
         let body = [];
         let numberOfParts = Math.floor(energy / 200);
-        numberOfParts = Math.min(numberOfParts, Math.floor(50 / 3));
+        numberOfParts = Math.min(numberOfParts, 6);
         for (let i = 0; i < numberOfParts; i++) {
             body.push(WORK);
         }
@@ -172,6 +171,7 @@ StructureSpawn.prototype.createEnoughLorry =
             filter: (s) => s.structureType == STRUCTURE_CONTAINER
                          && (s.pos.findInRange(FIND_SOURCES_ACTIVE, 3)).length > 0
                          && s.store[RESOURCE_ENERGY] > 0
+                         || s.structureType == STRUCTURE_LINK
         });
         //如果装载能力大于500，就不制造货车了
         let creeps = _.filter(creepsInRoom, c => c.memory.role == 'lorry');
@@ -187,7 +187,7 @@ StructureSpawn.prototype.createLorry =
         let energy = this.room.energyAvailable;
         let numberOfParts = Math.floor(energy / 150);
         //最多有14个carry组件就够用了
-        numberOfParts = Math.min(numberOfParts, 7);
+        numberOfParts = Math.min(numberOfParts, 6);
         let body = [];
         for (let i = 0; i < numberOfParts * 2; i++) {
             body.push(CARRY);
@@ -195,7 +195,7 @@ StructureSpawn.prototype.createLorry =
         for (let i = 0; i < numberOfParts; i++) {
             body.push(MOVE);
         }
-        console.log("createLorry: bodylength:" + body.length);
+
         let creepName = "lorry" + Game.time;
         return this.spawnCreep(body, creepName, { 
             memory: {role: 'lorry', working: false, roomName: this.room.name}

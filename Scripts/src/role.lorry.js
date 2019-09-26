@@ -74,12 +74,12 @@ module.exports = {
                 //其次取link里
                 container = creep.pos.findClosestByPath(FIND_STRUCTURES, {
                     filter: s => s.structureType == STRUCTURE_LINK
-                                && s.energy > 300
+                                && s.energy >= s.energyCapacity 
                 });
             }
 
             //紧急情况取仓库里的
-            if (container == undefined && creep.room.storage.store[RESOURCE_ENERGY] > creep.carryCapacity && creep.room.energy / creep.room.energyAvailable < 0.5) {
+            if (container == undefined && creep.room.storage != undefined && creep.room.storage.store[RESOURCE_ENERGY] > creep.carryCapacity && creep.room.energy / creep.room.energyAvailable < 0.5) {
                 container = creep.room.storage;
             }
 
